@@ -1,0 +1,25 @@
+# Build output
+.next/
+dist/
+out/
+build/
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env*
+
+# Bun and Lockfiles
+bun.lockb
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+
+# Vercel
+.vercel/
+
+# Public assets (optional - usually kept as-is)
+public/
