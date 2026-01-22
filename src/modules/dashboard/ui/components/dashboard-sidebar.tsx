@@ -54,7 +54,9 @@ const DashboardSidebar = () => {
           <h1 className="text-2xl font-semibold tracking-tight">VocalizeAI</h1>
         </Link>
       </SidebarHeader>
-      <Separator className="opacity-10 text-[#5D6B68]" />
+      <div className="px-4">
+        <Separator className="opacity-10 text-[#5D6B68] px-4" />
+      </div>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -82,7 +84,9 @@ const DashboardSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <Separator className="opacity-10 text-[#5D6B68]" />
+        <div className="px-4">
+          <Separator className="opacity-10 text-[#5D6B68] px-4" />
+        </div>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
