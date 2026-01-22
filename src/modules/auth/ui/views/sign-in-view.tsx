@@ -68,21 +68,26 @@ export const SignInView = () => {
     setIsSubmitting(true);
     setError(null);
 
-    await authClient.signIn.social(
-      {
-        provider,
-        callbackURL: "/",
-      },
-      {
-        onSuccess: () => {
-          setIsSubmitting(false);
+    try {
+      await authClient.signIn.social(
+        {
+          provider,
+          callbackURL: "/",
         },
-        onError: ({ error }) => {
-          setIsSubmitting(false);
-          setError(error.message);
-        },
-      }
-    );
+        {
+          onSuccess: () => {
+            setIsSubmitting(false);
+          },
+          onError: ({ error }) => {
+            setIsSubmitting(false);
+            setError(error.message);
+          },
+        }
+      );
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err instanceof Error ? err.message : "Unexpected error");
+    }
   };
 
   return (
