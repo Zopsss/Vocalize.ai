@@ -1,28 +1,30 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
+  push:
+    branches: [master]
   workflow_dispatch:
 
 jobs:
-  lint-and-format:
+  format:
+    name: Prettier check
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run format:check
 
-      - name: Install Dependencies
-        run: bun install
-
-      - name: Check Formatting (Prettier)
-        run: bunx prettier --check .
-
-      - name: Check Linting (ESLint)
-        run: bun run lint
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
