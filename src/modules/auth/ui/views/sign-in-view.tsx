@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
@@ -57,6 +58,27 @@ export const SignInView = () => {
         onError: ({ error }) => {
           setIsSubmitting(false);
           console.log("setting error: ", error.message);
+          setError(error.message);
+        },
+      }
+    );
+  };
+
+  const onSocial = async (provider: "github" | "google") => {
+    setIsSubmitting(true);
+    setError(null);
+
+    await authClient.signIn.social(
+      {
+        provider,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          setIsSubmitting(false);
+        },
+        onError: ({ error }) => {
+          setIsSubmitting(false);
           setError(error.message);
         },
       }
@@ -144,20 +166,22 @@ export const SignInView = () => {
                   </FieldSeparator>
                   <div className="grid grid-cols-2 gap-4">
                     <Button
+                      onClick={() => onSocial("google")}
                       disabled={isSubmitting}
                       variant={"outline"}
                       type="button"
                       className="w-full cursor-pointer"
                     >
-                      Google
+                      <FaGoogle />
                     </Button>
                     <Button
+                      onClick={() => onSocial("github")}
                       disabled={isSubmitting}
                       variant={"outline"}
                       type="button"
                       className="w-full cursor-pointer"
                     >
-                      Github
+                      <FaGithub />
                     </Button>
                   </div>
                   <div className="text-center text-sm">
