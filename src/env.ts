@@ -32,10 +32,14 @@ export const env = createEnv({
    * Client-side Environment Variables
    * These ARE available on the client and must be prefixed with NEXT_PUBLIC_.
    */
-  client: {},
+  client: {
+    NEXT_PUBLIC_APP_URL: z.url(),
+  },
 
   /*
    * For Next.js >= 13.4.4, you only need to destructure client variables.
    */
-  experimental__runtimeEnv: {},
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  },
 });
