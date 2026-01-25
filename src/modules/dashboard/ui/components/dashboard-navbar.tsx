@@ -73,15 +73,15 @@ const DashboardNavbar = () => {
         </Tooltip>
 
         <Button
-          className="flex items-center justify-between cursor-pointer w-72 bg-muted-foreground/7 hover:bg-muted-foreground/6"
+          className="flex items-center justify-between cursor-pointer w-72 bg-muted-foreground/4 hover:bg-muted-foreground/4"
           variant={"secondary"}
           onClick={() => setIsSearchbarOpen((prev) => !prev)}
         >
           <SearchIcon className="text-muted-foreground/60" />
           <p className="text-xs text-muted-foreground/70 font-sans text-left w-full">
-            Search something...
+            Search
           </p>
-          <Kbd className="bg-muted-foreground/7 py-1 px-2">
+          <Kbd className="bg-muted-foreground/6 py-1 px-2">
             {isMac ? "⌘ K" : "Ctrl ⇧ K"}
           </Kbd>
         </Button>

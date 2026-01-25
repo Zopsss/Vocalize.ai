@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
 
 import {
-  CommandDialog,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
+  CommandResponsiveDialog,
 } from "@/components/ui/command";
 
 interface Props {
@@ -15,14 +15,14 @@ interface Props {
 
 const DashboardCommand = ({ open, setOpen }: Props) => {
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandResponsiveDialog open={open} onOpenChange={setOpen}>
       <CommandInput />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandItem>Test</CommandItem>
         <CommandItem>Neko-Chan</CommandItem>
       </CommandList>
-    </CommandDialog>
+    </CommandResponsiveDialog>
   );
 };
 
