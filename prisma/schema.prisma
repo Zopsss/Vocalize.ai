@@ -23,6 +23,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  agents        Agents[]
 
   @@unique([email])
   @@map("user")
@@ -74,4 +75,14 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Agents {
+  id           String   @id @default(uuid())
+  name         String
+  userId       String
+  instructions String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
