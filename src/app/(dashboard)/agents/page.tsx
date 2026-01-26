@@ -1,6 +1,10 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { getSession } from "@/lib/server";
+
+import { AgentsHeader } from "@/modules/agents/ui/components/agents-header";
 import {
   AgentsView,
   AgentsViewError,
@@ -9,16 +13,23 @@ import {
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 
 const Page = async () => {
-  prefetch(trpc.agents.getMany.queryOptions());
+  const session = await getSession();
+
+  if (!session) redirect("/sign-in");
+
+  prefetch(trpc.agents.getAllAgents.queryOptions());
 
   return (
-    <HydrateClient>
-      <Suspense fallback={<AgentsViewLoading />}>
-        <ErrorBoundary fallback={<AgentsViewError />}>
-          <AgentsView />
-        </ErrorBoundary>
-      </Suspense>
-    </HydrateClient>
+    <>
+      <AgentsHeader />
+      <HydrateClient>
+        <Suspense fallback={<AgentsViewLoading />}>
+          <ErrorBoundary fallback={<AgentsViewError />}>
+            <AgentsView />
+          </ErrorBoundary>
+        </Suspense>
+      </HydrateClient>
+    </>
   );
 };
 

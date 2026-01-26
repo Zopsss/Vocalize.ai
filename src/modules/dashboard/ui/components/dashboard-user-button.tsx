@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
-import GeneratedAvatar from "@/components/generated-avatar";
+import { GeneratedAvatar } from "@/components/generated-avatar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,7 @@ import {
 
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const DashboardUserButton = () => {
+export const DashboardUserButton = () => {
   const router = useRouter();
 
   const { data, isPending } = authClient.useSession();
@@ -146,5 +146,3 @@ const DashboardUserButton = () => {
     </DropdownMenu>
   );
 };
-
-export default DashboardUserButton;
