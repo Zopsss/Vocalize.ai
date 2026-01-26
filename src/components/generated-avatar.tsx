@@ -13,7 +13,7 @@ interface Props {
   variant: "initials" | "botttsNeutral";
 }
 
-const GeneratedAvatar = ({ seed, className, variant }: Props) => {
+export const GeneratedAvatar = ({ seed, className, variant }: Props) => {
   let avatar;
 
   if (variant === "botttsNeutral") {
@@ -34,5 +34,3 @@ const GeneratedAvatar = ({ seed, className, variant }: Props) => {
     </Avatar>
   );
 };
-
-export default GeneratedAvatar;

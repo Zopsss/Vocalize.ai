@@ -13,7 +13,7 @@ interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const DashboardCommand = ({ open, setOpen }: Props) => {
+export const DashboardCommand = ({ open, setOpen }: Props) => {
   return (
     <CommandResponsiveDialog open={open} onOpenChange={setOpen}>
       <CommandInput />
@@ -25,5 +25,3 @@ const DashboardCommand = ({ open, setOpen }: Props) => {
     </CommandResponsiveDialog>
   );
 };
-
-export default DashboardCommand;

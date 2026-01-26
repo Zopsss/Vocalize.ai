@@ -12,9 +12,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import DashboardCommand from "./dashboard-command";
+import { DashboardCommand } from "./dashboard-command";
 
-const DashboardNavbar = () => {
+export const DashboardNavbar = () => {
   const { open, toggleSidebar } = useSidebar();
 
   const [isSearchbarOpen, setIsSearchbarOpen] = useState(false);
@@ -89,5 +89,3 @@ const DashboardNavbar = () => {
     </>
   );
 };
-
-export default DashboardNavbar;

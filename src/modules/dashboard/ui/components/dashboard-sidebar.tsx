@@ -20,7 +20,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import DashboardUserButton from "./dashboard-user-button";
+import { DashboardUserButton } from "./dashboard-user-button";
 
 const firstSection = [
   {
@@ -43,7 +43,7 @@ const secondSection = [
   },
 ];
 
-const DashboardSidebar = () => {
+export const DashboardSidebar = () => {
   const pathname = usePathname();
 
   return (
@@ -120,5 +120,3 @@ const DashboardSidebar = () => {
     </Sidebar>
   );
 };
-
-export default DashboardSidebar;
