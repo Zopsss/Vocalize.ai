@@ -42,16 +42,17 @@ export const AgentForm = ({
           trpc.agents.getAllAgents.queryOptions()
         );
 
-        if (initialValues?.data?.id) {
+        if (initialValues?.id) {
           await queryClient.invalidateQueries(
-            trpc.agents.getAgent.queryOptions({ id: initialValues.data.id })
+            trpc.agents.getAgent.queryOptions({ id: initialValues.id })
           );
         }
 
         onSuccess?.();
       },
       onError: (error) => {
-        toast(error.message);
+        // toast(error.message);
+        toast.error(error.message);
         onCancel?.();
 
         // TODO: Check if error code is "FORBIDDEN", redirect to "/upgrade"
@@ -62,12 +63,12 @@ export const AgentForm = ({
   const form = useForm<z.infer<typeof agentsInsertScehma>>({
     resolver: zodResolver(agentsInsertScehma),
     defaultValues: {
-      name: initialValues?.data?.name ?? "",
-      instructions: initialValues?.data?.instructions ?? "",
+      name: initialValues?.name ?? "",
+      instructions: initialValues?.instructions ?? "",
     },
   });
 
-  const isEdit = !!initialValues?.data?.id;
+  const isEdit = !!initialValues?.id;
   const isPending = createAgent.isPending; // later add updateAgent.isPending
 
   const onSubmit = async (values: z.infer<typeof agentsInsertScehma>) => {

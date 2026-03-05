@@ -10,23 +10,37 @@ export const agentsRouter = createTRPCRouter({
   getAgent: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const data = await prisma.agents.findFirst({
-        where: {
-          id: input.id,
-          userId: ctx.auth.user.id,
-        },
-      });
+      try {
+        const data = await prisma.agents.findFirst({
+          where: {
+            id: input.id,
+            userId: ctx.auth.user.id,
+          },
+        });
 
-      return { data };
+        return data;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get agent",
+        });
+      }
     }),
 
   getAllAgents: protectedProcedure.query(async () => {
-    const data = await prisma.agents.findMany();
+    try {
+      const data = await prisma.agents.findMany();
 
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // throw new TRPCError({ code: "BAD_REQUEST" });
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
+      // throw new TRPCError({ code: "BAD_REQUEST" });
 
-    return { agents: data };
+      return data;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get all agents",
+      });
+    }
   }),
 
   create: protectedProcedure
