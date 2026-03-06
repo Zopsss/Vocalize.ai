@@ -4,6 +4,13 @@ import z from "zod";
 
 import prisma from "@/lib/prisma";
 
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  MAXIMUM_PAGE_SIZE,
+  MINIMUM_PAGE_SIZE,
+} from "@/constants";
+import { Prisma } from "@/generated/prisma/client";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 export const agentsRouter = createTRPCRouter({
@@ -27,21 +34,58 @@ export const agentsRouter = createTRPCRouter({
       }
     }),
 
-  getAllAgents: protectedProcedure.query(async () => {
-    try {
-      const data = await prisma.agents.findMany();
+  getUserAgents: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().default(DEFAULT_PAGE),
+        pageSize: z
+          .number()
+          .min(MINIMUM_PAGE_SIZE)
+          .max(MAXIMUM_PAGE_SIZE)
+          .default(DEFAULT_PAGE_SIZE),
+        search: z.string().trim().nullish(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const { page, pageSize, search } = input;
 
-      // await new Promise((resolve) => setTimeout(resolve, 2000));
-      // throw new TRPCError({ code: "BAD_REQUEST" });
+        const where = {
+          userId: ctx.auth.user.id,
+          ...(search && {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }),
+        };
 
-      return data;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to get all agents",
-      });
-    }
-  }),
+        const [data, total] = await Promise.all([
+          prisma.agents.findMany({
+            where,
+            orderBy: {
+              createdAt: "desc",
+            },
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+          }),
+          prisma.agents.count({ where }),
+        ]);
+
+        return {
+          items: data,
+          total,
+          page,
+          pageSize,
+          totalPages: Math.ceil(total / pageSize),
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get all agents",
+        });
+      }
+    }),
 
   create: protectedProcedure
     .input(agentsInsertScehma)

@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
+import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { getSession } from "@/lib/server";
 
+import { loadFiltersSearchParams } from "@/modules/agents/server/filtersSearchParams";
 import { AgentsHeader } from "@/modules/agents/ui/components/agents-header";
 import {
   AgentsView,
@@ -12,12 +14,17 @@ import {
 } from "@/modules/agents/ui/views/agents-view";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 
-const Page = async () => {
+interface Props {
+  searchParams: Promise<SearchParams>;
+}
+
+const Page = async ({ searchParams }: Props) => {
   const session = await getSession();
 
   if (!session) redirect("/sign-in");
 
-  prefetch(trpc.agents.getAllAgents.queryOptions());
+  const filters = await loadFiltersSearchParams(searchParams);
+  prefetch(trpc.agents.getUserAgents.queryOptions({ ...filters }));
 
   return (
     <>
