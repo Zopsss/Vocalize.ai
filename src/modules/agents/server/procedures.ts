@@ -25,8 +25,19 @@ export const agentsRouter = createTRPCRouter({
           },
         });
 
+        if (!data) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "failed to get agent",
+          });
+        }
+
         return data;
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to get agent",
