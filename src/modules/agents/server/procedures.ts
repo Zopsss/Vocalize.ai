@@ -1,4 +1,4 @@
-import { agentsInsertScehma } from "../schemas";
+import { agentsInsertScehma, agentsUpdateSchema } from "../schemas";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
@@ -34,6 +34,7 @@ export const agentsRouter = createTRPCRouter({
 
         return data;
       } catch (error) {
+        console.error("Error in agents.getAgent: ", error);
         if (error instanceof TRPCError) {
           throw error;
         }
@@ -91,6 +92,7 @@ export const agentsRouter = createTRPCRouter({
           totalPages: Math.ceil(total / pageSize),
         };
       } catch (error) {
+        console.error("Error in agents.getUserAgents: ", error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to get all agents",
@@ -112,10 +114,60 @@ export const agentsRouter = createTRPCRouter({
             instructions,
           },
         });
-      } catch {
+      } catch (error) {
+        console.error("Error in agents.create: ", error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to create agent",
+        });
+      }
+    }),
+
+  update: protectedProcedure
+    .input(agentsUpdateSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const updatedAgent = await prisma.agents.update({
+          where: {
+            id: input.id,
+            userId: ctx.auth.user.id,
+          },
+          data: {
+            ...input,
+          },
+        });
+
+        return { data: updatedAgent };
+      } catch (error) {
+        console.error("Erro in agents.update: ", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update agent",
+        });
+      }
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+
+      const { user } = ctx.auth;
+
+      try {
+        const deletedAgent = await prisma.agents.delete({
+          where: {
+            id,
+            userId: user.id,
+          },
+        });
+
+        return { data: deletedAgent };
+      } catch (error) {
+        console.error("Error in agents.delete: ", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete agent",
         });
       }
     }),

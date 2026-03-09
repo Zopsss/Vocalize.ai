@@ -1,3 +1,5 @@
+"use client";
+
 import { EditIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 
@@ -48,7 +50,7 @@ const AgentIdHeader = ({ agentName, agentId, onEdit, onRemove }: Props) => {
         </BreadcrumbList>
       </Breadcrumb>
       <DropdownMenu modal={false}>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button variant={"ghost"}>
             <MoreVerticalIcon />
           </Button>
