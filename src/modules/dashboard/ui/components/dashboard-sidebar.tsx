@@ -30,8 +30,8 @@ const firstSection = [
   },
   {
     icon: BotIcon,
-    label: "Agents",
-    href: "/agents",
+    label: "Interview",
+    href: "/interviews",
   },
 ];
 

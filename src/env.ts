@@ -26,6 +26,18 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string().min(1),
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
+
+    // AWS S3
+    S3_BUCKET_NAME: z.string().min(1),
+    S3_BUCKET_ACCESS_KEY: z.string().min(1),
+    S3_BUCKET_SECRET_ACCESS_KEY: z.string().min(1),
+    S3_BUCKET_REGION: z.string().min(1),
+
+    // Gemini
+    GEMINI_API_KEY: z.string().min(1),
+
+    // Inngest
+    INNGEST_DEV: z.string().min(1),
   },
 
   /*

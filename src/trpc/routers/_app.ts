@@ -1,9 +1,11 @@
 import { createTRPCRouter } from "../init";
 
-import { agentsRouter } from "@/modules/agents/server/procedures";
+import { interviewRouter } from "@/modules/interviews/server/procedures";
+import { resumeRouter } from "@/modules/resume/server/procedures";
 
 export const appRouter = createTRPCRouter({
-  agents: agentsRouter,
+  interview: interviewRouter,
+  resume: resumeRouter,
 });
 
 // export type definition of API
