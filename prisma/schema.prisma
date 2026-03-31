@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String      @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean     @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   sessions      Session[]
   accounts      Account[]
-  agents        Agents[]
+  interviews    Interview[]
+  resumes       Resume[]
 
   @@unique([email])
   @@map("user")
@@ -77,12 +78,51 @@ model Verification {
   @@map("verification")
 }
 
-model Agents {
-  id           String   @id @default(uuid())
-  name         String
-  userId       String
-  instructions String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model Interview {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName    String
+  jobRole        String
+  jobDescription String
+
+  vapiCallId      String?
+  transcript      String? @db.Text
+  recordingS3Url  String?
+  feedbackSummary String?
+
+  status InterviewStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  resume    Resume?  @relation(fields: [resumeId], references: [id])
+  resumeId  String?
+}
+
+model Resume {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fileName     String
+  s3key        String
+  resumeObject Json?  @db.JsonB
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  interviews Interview[]
+
+  @@unique([userId])
+  @@map("resume")
+}
+
+enum InterviewStatus {
+  PENDING
+  IN_PROGRESS
+  PROCESSING
+  COMPLETED
+  FAILED
 }
