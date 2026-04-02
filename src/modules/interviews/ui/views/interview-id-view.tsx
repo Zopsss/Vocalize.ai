@@ -22,7 +22,7 @@ interface Props {
   interviewId: string;
 }
 
-const InterviewIdView = ({ interviewId }: Props) => {
+export const InterviewIdView = ({ interviewId }: Props) => {
   const [isUpdateInterviewDialogOpen, setIsUpdateInterviewDialogOpen] =
     useState(false);
   const router = useRouter();
@@ -115,5 +115,3 @@ export const InterviewIdViewError = () => {
     />
   );
 };
-
-export default InterviewIdView;

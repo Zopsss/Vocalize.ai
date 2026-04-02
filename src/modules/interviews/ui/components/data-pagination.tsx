@@ -7,7 +7,7 @@ interface Props {
   onPageChange: (page: number) => void;
 }
 
-const DataPagination = ({ page, totalPages, onPageChange }: Props) => {
+export const DataPagination = ({ page, totalPages, onPageChange }: Props) => {
   return (
     <div className="flex items-center justify-between">
       <div className="text-foreground">
@@ -32,5 +32,3 @@ const DataPagination = ({ page, totalPages, onPageChange }: Props) => {
     </div>
   );
 };
-
-export default DataPagination;

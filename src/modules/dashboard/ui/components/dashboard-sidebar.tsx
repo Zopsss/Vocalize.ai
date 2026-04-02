@@ -24,14 +24,14 @@ import { DashboardUserButton } from "./dashboard-user-button";
 
 const firstSection = [
   {
-    icon: VideoIcon,
-    label: "Meetings",
-    href: "/meetings",
-  },
-  {
     icon: BotIcon,
     label: "Interview",
     href: "/interviews",
+  },
+  {
+    icon: VideoIcon,
+    label: "Previous Interviews",
+    href: "/attempts",
   },
 ];
 

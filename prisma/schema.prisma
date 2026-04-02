@@ -14,17 +14,18 @@ datasource db {
 }
 
 model User {
-  id            String      @id
-  name          String
-  email         String
-  emailVerified Boolean     @default(false)
-  image         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  interviews    Interview[]
-  resumes       Resume[]
+  id                String             @id
+  name              String
+  email             String
+  emailVerified     Boolean            @default(false)
+  image             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  sessions          Session[]
+  accounts          Account[]
+  interviews        Interview[]
+  resumes           Resume[]
+  interviewAttempts InterviewAttempt[]
 
   @@unique([email])
   @@map("user")
@@ -88,17 +89,44 @@ model Interview {
   jobRole        String
   jobDescription String
 
+  attemptsCount Int @default(0)
+
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  resume            Resume?            @relation(fields: [resumeId], references: [id])
+  resumeId          String?
+  interviewAttempts InterviewAttempt[]
+
+  @@map("interview")
+}
+
+model InterviewAttempt {
+  id String @id @default(uuid())
+
+  name String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  interviewId String
+  interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+
+  status InterviewStatus @default(PENDING)
+
   vapiCallId      String?
   transcript      String? @db.Text
   recordingS3Url  String?
   feedbackSummary String?
 
-  status InterviewStatus @default(PENDING)
+  startedAt   DateTime?
+  completedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  resume    Resume?  @relation(fields: [resumeId], references: [id])
-  resumeId  String?
+
+  @@index([interviewId])
+  @@index([status])
+  @@map("interview-attempts")
 }
 
 model Resume {

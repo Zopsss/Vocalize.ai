@@ -5,14 +5,14 @@ import { ErrorBoundary } from "react-error-boundary";
 import { getSession } from "@/lib/server";
 
 import {
-  InterviewIdView,
-  InterviewIdViewError,
-  InterviewIdViewLoading,
-} from "@/modules/interviews/ui/views/interview-id-view";
+  AttemptsIdView,
+  AttemptsIdViewError,
+  AttemptsIdViewLoading,
+} from "@/modules/attempts/ui/views/attempts-id-view";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 
 interface Props {
-  params: Promise<{ interviewId: string }>;
+  params: Promise<{ attemptId: string }>;
 }
 
 const Page = async ({ params }: Props) => {
@@ -22,14 +22,14 @@ const Page = async ({ params }: Props) => {
     redirect("/sign-in");
   }
 
-  const { interviewId } = await params;
-  prefetch(trpc.interview.getOne.queryOptions({ id: interviewId }));
+  const { attemptId } = await params;
+  prefetch(trpc.interviewAttempts.getOne.queryOptions({ id: attemptId }));
 
   return (
     <HydrateClient>
-      <Suspense fallback={<InterviewIdViewLoading />}>
-        <ErrorBoundary fallback={<InterviewIdViewError />}>
-          <InterviewIdView interviewId={interviewId} />
+      <Suspense fallback={<AttemptsIdViewLoading />}>
+        <ErrorBoundary fallback={<AttemptsIdViewError />}>
+          <AttemptsIdView attemptId={attemptId} />
         </ErrorBoundary>
       </Suspense>
     </HydrateClient>

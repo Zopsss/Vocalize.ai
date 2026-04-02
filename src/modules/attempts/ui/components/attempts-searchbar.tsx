@@ -1,4 +1,4 @@
-import { useInterviewsFilters } from "../../hooks/use-interview-filters";
+import { useAttemptsFilters } from "../../hooks/use-attempts-filters";
 import { SearchIcon } from "lucide-react";
 
 import {
@@ -7,8 +7,8 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 
-export const InterviewSearchbar = () => {
-  const [filters, setFilters] = useInterviewsFilters();
+export const AttemptsSearchbar = () => {
+  const [filters, setFilters] = useAttemptsFilters();
 
   return (
     <InputGroup className="bg-background max-w-72">
