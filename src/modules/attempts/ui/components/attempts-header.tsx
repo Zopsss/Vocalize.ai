@@ -1,16 +1,16 @@
 "use client";
 
-import { useInterviewsFilters } from "../../hooks/use-interview-filters";
+import { useAttemptsFilters } from "../../hooks/use-attempts-filters";
 import { PlusIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { InterviewDialog } from "./interview-dialog";
-import { InterviewSearchbar } from "./interview-searchbar";
+import { AttemptsSearchbar } from "./attempts-searchbar";
+import { CreateAttemptDialog } from "./create-attempts-dialog";
 
-export const InterviewHeader = () => {
-  const [filters, setFilters] = useInterviewsFilters();
+export const AttemptsHeader = () => {
+  const [filters, setFilters] = useAttemptsFilters();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const isFiltered = !!filters.search;
@@ -24,17 +24,17 @@ export const InterviewHeader = () => {
 
   return (
     <>
-      <InterviewDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <CreateAttemptDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
       <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4">
         <div className="flex items-center justify-between">
           <h5 className="text-xl font-medium">My Interviews</h5>
           <Button onClick={() => setIsDialogOpen(true)}>
             <PlusIcon />
-            New Interview
+            Attempt an interview
           </Button>
         </div>
         <div className="flex items-center gap-x-2">
-          <InterviewSearchbar />
+          <AttemptsSearchbar />
           {isFiltered && (
             <Button variant={"outline"} onClick={onClearFilter}>
               <XCircleIcon />

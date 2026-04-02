@@ -1,9 +1,7 @@
 "use client";
 
-import { useInterviewsFilters } from "../../hooks/use-interview-filters";
+import { useAttemptsFilters } from "../../hooks/use-attempts-filters";
 import { columns } from "../components/columns";
-import { DataPagination } from "../components/data-pagination";
-import { DataTable } from "../components/data-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -11,24 +9,24 @@ import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
 
+import { DataPagination } from "@/modules/interviews/ui/components/data-pagination";
+import { DataTable } from "@/modules/interviews/ui/components/data-table";
 import { useTRPC } from "@/trpc/client";
 
-export const InterviewView = () => {
-  const [filters, setFilters] = useInterviewsFilters();
+export const AttemptsView = () => {
+  const [filters, setFilters] = useAttemptsFilters();
   const router = useRouter();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
-    trpc.interview.getMany.queryOptions({ ...filters })
+    trpc.interviewAttempts.getMany.queryOptions({ ...filters })
   );
-
-  console.log("data: ", data);
 
   return (
     <div className="flex flex-col gap-y-4 flex-1 pb-4 px-4 md:px-8">
       <DataTable
         columns={columns}
         data={data.items}
-        onRowClick={(row) => router.push(`/interviews/${row.id}`)}
+        onRowClick={(row) => router.push(`/attempts/${row.id}`)}
       />
       <DataPagination
         page={data.page}
@@ -45,19 +43,19 @@ export const InterviewView = () => {
   );
 };
 
-export const InterviewsViewLoading = () => {
+export const AttemptsViewLoading = () => {
   return (
     <LoadingState
-      title="Loading Interviews"
+      title="Loading Interview Attempts"
       description="This may take some time"
     />
   );
 };
 
-export const InterviewsViewError = () => {
+export const AttemptsViewError = () => {
   return (
     <ErrorState
-      title="Error while loading Interviews"
+      title="Error while loading Interview Attempts"
       description="Something went wrong"
     />
   );
