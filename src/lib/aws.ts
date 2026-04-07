@@ -56,6 +56,30 @@ export const deleteS3Object = async (key: string) => {
   return await s3Client.send(command);
 };
 
+export const uploadToS3 = async (
+  key: string,
+  body: Buffer,
+  contentType: string
+) => {
+  const command = new PutObjectCommand({
+    Bucket: env.S3_BUCKET_NAME,
+    Key: key,
+    Body: body,
+    ContentType: contentType,
+  });
+
+  return await s3Client.send(command);
+};
+
+export const createPresignedStreamUrl = (key: string) => {
+  const command = new GetObjectCommand({
+    Bucket: env.S3_BUCKET_NAME,
+    Key: key,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: 3600 });
+};
+
 export async function getS3ObjectBuffer(key: string): Promise<Buffer> {
   const command = new GetObjectCommand({
     Bucket: env.S3_BUCKET_NAME!,

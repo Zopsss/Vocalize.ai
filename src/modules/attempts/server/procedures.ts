@@ -2,6 +2,7 @@ import { attemptInsertScehma, attemptUpdateSchema } from "../schemas";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
+import { createPresignedStreamUrl } from "@/lib/aws";
 import prisma from "@/lib/prisma";
 
 import {
@@ -39,7 +40,11 @@ export const attemptRouter = createTRPCRouter({
           });
         }
 
-        return data;
+        const recordingUrl = data.recordingS3Url
+          ? await createPresignedStreamUrl(data.recordingS3Url)
+          : null;
+
+        return { ...data, recordingS3Url: recordingUrl };
       } catch (error) {
         console.error("Error in interview.getOne: ", error);
         if (error instanceof TRPCError) {
