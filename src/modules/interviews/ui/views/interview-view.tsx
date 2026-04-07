@@ -21,8 +21,6 @@ export const InterviewView = () => {
     trpc.interview.getMany.queryOptions({ ...filters })
   );
 
-  console.log("data: ", data);
-
   return (
     <div className="flex flex-col gap-y-4 flex-1 pb-4 px-4 md:px-8">
       <DataTable

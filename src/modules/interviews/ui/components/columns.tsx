@@ -39,8 +39,8 @@ export const columns: ColumnDef<GetInterview>[] = [
         className="flex items-center gap-x-2 [&>svg:size-4] rounded-md cursor-pointer hover:bg-muted"
       >
         <VideoIcon className="text-blue-700" />
-        {row.original.attemptsCount > 1 ? row.original.attemptsCount : 0}{" "}
-        {row.original.attemptsCount > 1 ? "Attempts" : "Attempt"}
+        {row.original.attemptsCount > 0 ? row.original.attemptsCount : 0}{" "}
+        {row.original.attemptsCount > 0 ? "Attempts" : "Attempt"}
       </Badge>
     ),
   },

@@ -1,53 +1,15 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { Output, generateText } from "ai";
-import z from "zod";
 
 import { deleteS3Object, getS3ObjectBuffer } from "@/lib/aws";
 import prisma from "@/lib/prisma";
 
 import { inngest } from "./client";
-import { Prisma } from "@/generated/prisma/client";
+import { ResumeSchema } from "@/constants";
+import { env } from "@/env";
 
 const google = createGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
-const resumeSchema = z.object({
-  summary: z.string().nullish(),
-  name: z.string().nullish(),
-  email: z.email().nullish(),
-  phone: z.string().nullish(),
-  education: z
-    .array(
-      z.object({
-        school: z.string(),
-        degree: z.string(),
-        year: z.string(),
-      })
-    )
-    .nullish(),
-  skills: z.record(z.string(), z.array(z.string())).nullish(),
-  experience: z
-    .array(
-      z.object({
-        role: z.string(),
-        company: z.string(),
-        duration: z.string(),
-        bullets: z.array(z.string()),
-      })
-    )
-    .nullish(),
-  projects: z
-    .array(
-      z.object({
-        name: z.string(),
-        techStack: z.array(z.string()),
-        description: z.string(),
-      })
-    )
-    .nullish(),
-  hackathons: z.array(z.string()).nullish(),
-  error: z.string().nullish(),
+  apiKey: env.GEMINI_API_KEY,
 });
 
 export const extractResumeText = inngest.createFunction(
@@ -88,7 +50,7 @@ export const extractResumeText = inngest.createFunction(
           data: {
             resumeObject: {
               error: extractionResult.error,
-            } as Prisma.InputJsonValue,
+            },
           },
         });
         return { status: "failed", reason: extractionResult.error };
@@ -110,7 +72,7 @@ export const extractResumeText = inngest.createFunction(
     const resumeObject = await step.run("parse-resume-with-ai", async () => {
       const { output } = await generateText({
         model: google("gemini-2.5-flash"),
-        output: Output.object({ schema: resumeSchema }),
+        output: Output.object({ schema: ResumeSchema }),
         system: `You are an expert resume parser. The text was extracted from a PDF and may have
           concatenated words due to multi-column layout. Parse it intelligently.
           If some fields are missing then don't include them.
@@ -131,7 +93,7 @@ export const extractResumeText = inngest.createFunction(
           data: {
             resumeObject: {
               error: resumeObject.error,
-            } as Prisma.InputJsonValue,
+            },
           },
         });
         return { status: "failed", reason: resumeObject.error };
@@ -144,12 +106,12 @@ export const extractResumeText = inngest.createFunction(
     await step.run("save-to-db", async () => {
       return await prisma.resume.upsert({
         where: { userId: event.data.userId },
-        update: { resumeObject: resumeObject as Prisma.InputJsonValue },
+        update: { resumeObject },
         create: {
           userId: event.data.userId,
           fileName: event.data.fileName,
           s3key: event.data.s3key,
-          resumeObject: resumeObject as Prisma.InputJsonValue,
+          resumeObject,
         },
       });
     });

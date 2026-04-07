@@ -3,8 +3,8 @@
 import { interviewInsertScehma } from "../../schemas";
 import { GetInterview } from "../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -35,6 +35,8 @@ export const InterviewForm = ({
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
+  const { data: resume } = useQuery(trpc.resume.get.queryOptions());
+
   const createInterview = useMutation(
     trpc.interview.create.mutationOptions({
       onSuccess: async () => {
@@ -46,7 +48,6 @@ export const InterviewForm = ({
         onSuccess?.();
       },
       onError: (error) => {
-        // toast(error.message);
         toast.error(error.message);
         onCancel?.();
 
@@ -71,7 +72,6 @@ export const InterviewForm = ({
         onSuccess?.();
       },
       onError: (error) => {
-        // toast(error.message);
         toast.error(error.message);
         onCancel?.();
 
@@ -86,17 +86,19 @@ export const InterviewForm = ({
       companyName: initialValues?.companyName ?? "",
       jobRole: initialValues?.jobRole ?? "",
       jobDescription: initialValues?.jobDescription ?? "",
+      resumeId: initialValues?.resumeId ?? resume?.id ?? "",
     },
   });
 
   const isEdit = !!initialValues?.id;
   const isPending = createInterview.isPending || updateInterview.isPending;
+  const hasResume = !!resume?.id;
 
   const onSubmit = async (values: z.infer<typeof interviewInsertScehma>) => {
     if (isEdit) {
       updateInterview.mutate({ ...values, id: initialValues.id });
     } else {
-      createInterview.mutate(values);
+      createInterview.mutate({ ...values, resumeId: resume!.id });
     }
   };
 
@@ -104,10 +106,18 @@ export const InterviewForm = ({
     <form id="interview-form" onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>
         <GeneratedAvatar
-          seed={form.watch("companyName")}
+          seed={useWatch({ control: form.control, name: "companyName" })}
           variant="botttsNeutral"
           className="border size-16"
         />
+
+        {!isEdit && !hasResume && (
+          <div className="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+            You need to upload your resume before creating an interview. Go to
+            your profile settings to upload one.
+          </div>
+        )}
+
         <Controller
           name="companyName"
           control={form.control}
@@ -174,7 +184,7 @@ export const InterviewForm = ({
           <Button variant="outline" type="button" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending || (!isEdit && !hasResume)}>
             {isEdit ? "Update" : "Create"}
           </Button>
         </Field>

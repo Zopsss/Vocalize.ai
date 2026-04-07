@@ -105,7 +105,7 @@ export const interviewRouter = createTRPCRouter({
   create: protectedProcedure
     .input(interviewInsertScehma)
     .mutation(async ({ ctx, input }) => {
-      const { companyName, jobRole, jobDescription } = input;
+      const { companyName, jobRole, jobDescription, resumeId } = input;
       const { user } = ctx.auth;
 
       try {
@@ -115,6 +115,7 @@ export const interviewRouter = createTRPCRouter({
             companyName,
             jobRole,
             jobDescription,
+            resumeId,
           },
         });
       } catch (error) {

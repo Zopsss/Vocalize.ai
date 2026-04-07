@@ -37,7 +37,11 @@ export const env = createEnv({
     GEMINI_API_KEY: z.string().min(1),
 
     // Inngest
-    INNGEST_DEV: z.string().min(1),
+    INNGEST_DEV: z.coerce.string(),
+
+    // Vapi
+    VAPI_PRIVATE_KEY: z.string().min(1, "Vapi private key is required"),
+    VAPI_WEBHOOK_SECRET: z.string().min(1, "Vapi Webhook secret is required"),
   },
 
   /*
@@ -46,6 +50,12 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_APP_URL: z.url(),
+    NEXT_PUBLIC_VAPI_PUBLIC_KEY: z
+      .string()
+      .min(1, "Vapi Public key is required"),
+    NEXT_PUBLIC_VAPI_ASSISTANT_ID: z
+      .string()
+      .min(1, "Vapi Assistant id is required"),
   },
 
   /*
@@ -53,5 +63,7 @@ export const env = createEnv({
    */
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_VAPI_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY,
+    NEXT_PUBLIC_VAPI_ASSISTANT_ID: process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID,
   },
 });

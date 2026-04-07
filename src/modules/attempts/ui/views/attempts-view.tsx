@@ -17,9 +17,17 @@ export const AttemptsView = () => {
   const [filters, setFilters] = useAttemptsFilters();
   const router = useRouter();
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(
-    trpc.interviewAttempts.getMany.queryOptions({ ...filters })
-  );
+
+  const { data } = useSuspenseQuery({
+    ...trpc.interviewAttempts.getMany.queryOptions({ ...filters }),
+    refetchInterval: (query) => {
+      const items = query.state.data?.items ?? [];
+      const hasActiveAttempt = items.some(
+        (item) => item.status === "IN_PROGRESS"
+      );
+      return hasActiveAttempt ? 2000 : false;
+    },
+  });
 
   return (
     <div className="flex flex-col gap-y-4 flex-1 pb-4 px-4 md:px-8">

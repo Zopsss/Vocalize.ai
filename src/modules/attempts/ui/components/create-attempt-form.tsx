@@ -3,7 +3,13 @@
 import { attemptInsertScehma } from "../../schemas";
 import { GetOneInterviewAttempt } from "../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,6 +39,7 @@ export const CreateAttemptForm = ({
   onCancel,
   initialValues,
 }: CreateAttemptFormProps) => {
+  const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const [interviewSearch, setInterviewSearch] = useState("");
@@ -42,18 +49,25 @@ export const CreateAttemptForm = ({
       search: interviewSearch,
     })
   );
+  const { data: resumeData } = useSuspenseQuery(trpc.resume.get.queryOptions());
 
   const items = interviewData?.items ?? [];
 
   const createInterviewAttempt = useMutation(
     trpc.interviewAttempts.create.mutationOptions({
-      onSuccess: async () => {
-        await queryClient.invalidateQueries(
-          trpc.interviewAttempts.getMany.queryOptions({})
-        );
+      onSuccess: async ({ id }) => {
+        await Promise.all([
+          queryClient.invalidateQueries(
+            trpc.interviewAttempts.getMany.queryOptions({})
+          ),
+          queryClient.invalidateQueries(
+            trpc.interview.getMany.queryOptions({})
+          ),
+        ]);
 
         // TODO: Invalidate free tier usage
         onSuccess?.();
+        router.push(`interview-call/${id}`);
       },
       onError: (error) => {
         // toast(error.message);
@@ -101,13 +115,13 @@ export const CreateAttemptForm = ({
   const isEdit = !!initialValues?.id;
   const isPending =
     createInterviewAttempt.isPending || updateInterviewAttempt.isPending;
+  const hasResume = !!resumeData?.id;
 
   const onSubmit = async (values: z.infer<typeof attemptInsertScehma>) => {
-    console.log("values: ", values);
     if (isEdit) {
       updateInterviewAttempt.mutate({ ...values, id: initialValues.id });
     } else {
-      createInterviewAttempt.mutate(values);
+      createInterviewAttempt.mutate({ ...values });
     }
   };
 
@@ -119,6 +133,13 @@ export const CreateAttemptForm = ({
           variant="botttsNeutral"
           className="border size-16"
         />
+
+        {!isEdit && !hasResume && (
+          <div className="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+            You need to upload your resume before creating an attempt. Go to
+            your profile settings to upload one.
+          </div>
+        )}
         <Controller
           name="name"
           control={form.control}
@@ -184,7 +205,7 @@ export const CreateAttemptForm = ({
           <Button variant="outline" type="button" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending || (!isEdit && !hasResume)}>
             {isEdit ? "Update" : "Create"}
           </Button>
         </Field>
