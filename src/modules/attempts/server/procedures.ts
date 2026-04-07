@@ -23,12 +23,19 @@ export const attemptRouter = createTRPCRouter({
             id: input.id,
             userId: ctx.auth.user.id,
           },
+          include: {
+            interview: {
+              include: {
+                resume: true,
+              },
+            },
+          },
         });
 
         if (!data) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "failed to get interview",
+            message: "failed to get interview attempt",
           });
         }
 
@@ -41,7 +48,7 @@ export const attemptRouter = createTRPCRouter({
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get interview",
+          message: "Failed to get interview attempt",
         });
       }
     }),
@@ -118,13 +125,21 @@ export const attemptRouter = createTRPCRouter({
       const { user } = ctx.auth;
 
       try {
-        return await prisma.interviewAttempt.create({
-          data: {
-            userId: user.id,
-            name,
-            interviewId,
-          },
-        });
+        const [attempt] = await prisma.$transaction([
+          prisma.interviewAttempt.create({
+            data: {
+              userId: user.id,
+              name,
+              interviewId,
+            },
+          }),
+          prisma.interview.update({
+            where: { id: interviewId },
+            data: { attemptsCount: { increment: 1 } },
+          }),
+        ]);
+
+        return attempt;
       } catch (error) {
         console.error("Error in interview.create: ", error);
         throw new TRPCError({

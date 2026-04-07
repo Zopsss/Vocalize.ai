@@ -58,7 +58,7 @@ export const deleteS3Object = async (key: string) => {
 
 export async function getS3ObjectBuffer(key: string): Promise<Buffer> {
   const command = new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME!,
+    Bucket: env.S3_BUCKET_NAME!,
     Key: key,
   });
 

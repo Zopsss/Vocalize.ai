@@ -13,6 +13,10 @@ datasource db {
   provider = "postgresql"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 model User {
   id                String             @id
   name              String
@@ -134,9 +138,11 @@ model Resume {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  fileName     String
-  s3key        String
-  resumeObject Json?  @db.JsonB
+  fileName String
+  s3key    String
+
+  /// [ResumeObjectType]
+  resumeObject Json? @db.JsonB
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
