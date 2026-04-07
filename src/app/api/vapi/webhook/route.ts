@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { uploadToS3 } from "@/lib/aws";
 import prisma from "@/lib/prisma";
 
 import { env } from "@/env";
@@ -56,17 +57,31 @@ export async function POST(req: NextRequest) {
         const startedAt: string | null = message.startedAt ?? null;
         const endedAt: string | null = message.endedAt ?? null;
 
-        // console.log("----------MAIN-----------");
-        // console.log("---------------------");
-        // console.log("recording url:", recordingUrl);
-        // console.log("summary:", summary);
-        // console.log("startedAt:", startedAt);
-        // console.log("endedAt:", endedAt);
-        // console.log("transcript:", transcript);
-        // console.log("transcript:", transcript);
-        // console.log("attemptId:", attemptId);
+        let recordingS3Key: string | undefined;
 
-        // console.log("Message: ", message);
+        if (recordingUrl) {
+          try {
+            const response = await fetch(recordingUrl);
+            if (response.ok) {
+              const contentType =
+                response.headers.get("content-type") ?? "audio/wav";
+              const ext = contentType.includes("mp3")
+                ? "mp3"
+                : contentType.includes("mpeg")
+                  ? "mp3"
+                  : "wav";
+              const buffer = Buffer.from(await response.arrayBuffer());
+              const key = `recordings/${attemptId}.${ext}`;
+              await uploadToS3(key, buffer, contentType);
+              recordingS3Key = key;
+            }
+          } catch (err) {
+            console.error(
+              "[vapi/webhook] Failed to upload recording to S3:",
+              err
+            );
+          }
+        }
 
         await prisma.interviewAttempt.update({
           where: { id: attemptId },
@@ -74,7 +89,7 @@ export async function POST(req: NextRequest) {
             vapiCallId,
             status: "COMPLETED",
             transcript: transcript ?? undefined,
-            recordingS3Url: recordingUrl ?? undefined,
+            recordingS3Url: recordingS3Key,
             feedbackSummary: summary ?? undefined,
             startedAt: startedAt ? new Date(startedAt) : undefined,
             completedAt: endedAt ? new Date(endedAt) : undefined,
