@@ -8,12 +8,4 @@ export const attemptInsertScehma = z.object({
 export const attemptUpdateSchema = attemptInsertScehma.extend({
   id: z.string().min(1, "Interview id is required"),
   interviewId: z.string().optional(),
-
-  vapiCallId: z.string().optional(),
-  transcript: z.string().optional(),
-  recordingS3Url: z.string().optional(),
-  feedbackSummary: z.string().optional(),
-  startedAt: z.date().optional(),
-  completedAt: z.date().optional(),
-  attempts: z.int().optional(),
 });

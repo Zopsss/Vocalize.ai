@@ -50,12 +50,38 @@ export async function POST(req: NextRequest) {
 
         if (!vapiCallId || !attemptId) break;
 
-        const transcript: string | null = message.artifact?.transcript ?? null;
         const recordingUrl: string | null =
           message.artifact?.recordingUrl ?? null;
         const summary: string | null = message.analysis?.summary ?? null;
         const startedAt: string | null = message.startedAt ?? null;
         const endedAt: string | null = message.endedAt ?? null;
+
+        const rawMessages = Array.isArray(message.artifact?.messages)
+          ? message.artifact.messages
+          : [];
+
+        const transcript = rawMessages.flatMap((m: unknown) => {
+          if (
+            !m ||
+            typeof m !== "object" ||
+            !("role" in m) ||
+            !("message" in m) ||
+            !("secondsFromStart" in m) ||
+            ((m as { role: unknown }).role !== "bot" &&
+              (m as { role: unknown }).role !== "user") ||
+            typeof (m as { message: unknown }).message !== "string" ||
+            typeof (m as { secondsFromStart: unknown }).secondsFromStart !==
+              "number"
+          ) {
+            return [];
+          }
+          const { role, message, secondsFromStart } = m as {
+            role: "bot" | "user";
+            message: string;
+            secondsFromStart: number;
+          };
+          return [{ role, message, secondsFromStart }];
+        });
 
         let recordingS3Key: string | undefined;
 
@@ -88,7 +114,7 @@ export async function POST(req: NextRequest) {
           data: {
             vapiCallId,
             status: "COMPLETED",
-            transcript: transcript ?? undefined,
+            transcript: transcript.length > 0 ? transcript : undefined,
             recordingS3Url: recordingS3Key,
             feedbackSummary: summary ?? undefined,
             startedAt: startedAt ? new Date(startedAt) : undefined,

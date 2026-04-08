@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 
 interface Props {
-  attemptName: string;
   companyName: string;
   jobRole: string;
   jobDescription: string;
@@ -39,7 +38,6 @@ const formatDate = (date: Date): string =>
   });
 
 export const AttemptSummaryTab = ({
-  attemptName,
   companyName,
   jobRole,
   jobDescription,
@@ -74,9 +72,6 @@ export const AttemptSummaryTab = ({
           className="hidden"
         />
       )}
-
-      {/* Title */}
-      <h1 className="text-3xl font-bold tracking-tight">{attemptName}</h1>
 
       {/* Company | role | date */}
       <div className="flex items-center gap-3 flex-wrap">
