@@ -22,7 +22,9 @@ export const InterviewCommandSelect = () => {
     <CommandSelect
       placeholder="Interview"
       value={filters.interviewId ?? undefined}
-      onSelect={(value) => setFilters({ interviewId: value })}
+      onSelect={(value) =>
+        setFilters({ interviewId: value, page: 1 })
+      }
       onSearch={setSearch}
       options={items.map((item) => ({
         id: item.id,
