@@ -94,50 +94,9 @@ export const InterviewEndedView = ({ attemptId }: Props) => {
               ? "Your session has ended. Hang tight while we process your recording, transcript, and feedback."
               : isFailed
                 ? "Something went wrong while processing your session. Your attempt has been saved."
-                : "Well done — you made it through! Your results are ready below."}
+                : "Your results are ready — head to your attempt page to review the transcript, recording, and AI feedback."}
           </p>
         </div>
-
-        {/* Results — shown when completed */}
-        {isCompleted && (
-          <div className="w-full flex flex-col gap-4">
-            {/* Feedback summary */}
-            {data?.feedbackSummary && (
-              <div className="w-full rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 flex flex-col gap-3 text-left">
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
-                  AI Feedback
-                </p>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  {data.feedbackSummary}
-                </p>
-              </div>
-            )}
-
-            {/* Transcript */}
-            {data?.transcript && (
-              <div className="w-full rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 flex flex-col gap-3 text-left">
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
-                  Transcript
-                </p>
-                <div className="max-h-48 overflow-y-auto">
-                  <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                    {data.transcript}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Recording */}
-            {data?.recordingS3Url && (
-              <div className="w-full rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 flex flex-col gap-3 text-left">
-                <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
-                  Recording
-                </p>
-                <audio controls src={data.recordingS3Url} className="w-full" />
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Processing indicator card */}
         {isProcessing && (

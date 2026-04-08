@@ -3,19 +3,13 @@ import { Play } from "lucide-react";
 import { AudioPlayer } from "./audio-player";
 
 interface Props {
-  attemptName: string;
   recordingUrl: string | null;
   isCompleted: boolean;
 }
 
-export const AttemptRecordingTab = ({
-  attemptName,
-  recordingUrl,
-  isCompleted,
-}: Props) => {
+export const AttemptRecordingTab = ({ recordingUrl, isCompleted }: Props) => {
   return (
     <div className="flex flex-col gap-y-6 max-w-lg">
-      <h1 className="text-3xl font-bold tracking-tight">{attemptName}</h1>
       <h2 className="text-lg font-bold">Recording</h2>
       {recordingUrl ? (
         <AudioPlayer src={recordingUrl} />

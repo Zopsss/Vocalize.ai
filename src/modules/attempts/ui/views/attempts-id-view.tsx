@@ -61,7 +61,7 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
   const onDelete = async () => {
     const ok = await confirmDelete();
     if (!ok) return;
-    await deleteAttempt.mutate({ id: attemptId });
+    deleteAttempt.mutate({ id: attemptId });
   };
 
   const {
@@ -83,7 +83,6 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
       icon: <BookOpen className="size-4" />,
       component: (
         <AttemptSummaryTab
-          attemptName={name}
           companyName={interview.companyName}
           jobRole={interview.jobRole}
           jobDescription={interview.jobDescription}
@@ -100,8 +99,13 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
       icon: <FileText className="size-4" />,
       component: (
         <AttemptTranscriptTab
-          attemptName={name}
-          transcript={transcript}
+          transcript={
+            transcript as Array<{
+              role: "bot" | "user";
+              message: string;
+              secondsFromStart: number;
+            }> | null
+          }
           isCompleted={isCompleted}
         />
       ),
@@ -111,7 +115,6 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
       icon: <Mic className="size-4" />,
       component: (
         <AttemptRecordingTab
-          attemptName={name}
           recordingUrl={recordingS3Url}
           isCompleted={isCompleted}
         />
@@ -120,7 +123,7 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
     {
       label: "Ask AI",
       icon: <Sparkles className="size-4" />,
-      component: <AttemptAskAiTab attemptName={name} />,
+      component: <AttemptAskAiTab />,
     },
   ];
 

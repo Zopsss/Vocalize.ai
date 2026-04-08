@@ -118,9 +118,11 @@ model InterviewAttempt {
   status InterviewStatus @default(PENDING)
 
   vapiCallId      String?
-  transcript      String? @db.Text
   recordingS3Url  String?
   feedbackSummary String?
+
+  /// [TranscriptType]
+  transcript Json? @db.JsonB
 
   startedAt   DateTime?
   completedAt DateTime?
