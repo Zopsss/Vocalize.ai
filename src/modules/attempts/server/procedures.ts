@@ -11,7 +11,7 @@ import {
   MAXIMUM_PAGE_SIZE,
   MINIMUM_PAGE_SIZE,
 } from "@/constants";
-import { Prisma } from "@/generated/prisma/client";
+import { InterviewStatus, Prisma } from "@/generated/prisma/client";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
 export const attemptRouter = createTRPCRouter({
@@ -68,11 +68,21 @@ export const attemptRouter = createTRPCRouter({
           .max(MAXIMUM_PAGE_SIZE)
           .default(DEFAULT_PAGE_SIZE),
         search: z.string().trim().nullish(),
+        interviewId: z.string().nullish(),
+        status: z
+          .enum([
+            InterviewStatus.UPCOMING,
+            InterviewStatus.COMPLETED,
+            InterviewStatus.FAILED,
+            InterviewStatus.PROCESSING,
+            InterviewStatus.IN_PROGRESS,
+          ])
+          .nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
       try {
-        const { page, pageSize, search } = input;
+        const { page, pageSize, search, interviewId, status } = input;
 
         const where = {
           userId: ctx.auth.user.id,
@@ -86,7 +96,21 @@ export const attemptRouter = createTRPCRouter({
 
         const [data, total] = await Promise.all([
           prisma.interviewAttempt.findMany({
-            where,
+            where: {
+              userId: ctx.auth.user.id,
+              ...(search && {
+                name: {
+                  contains: search,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              }),
+              ...(interviewId && {
+                interviewId,
+              }),
+              ...(status && {
+                status,
+              }),
+            },
             orderBy: {
               createdAt: "desc",
             },

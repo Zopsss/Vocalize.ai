@@ -26,6 +26,7 @@ const Page = async ({ searchParams }: Props) => {
   const filters = await loadFiltersSearchParams(searchParams);
   prefetch(trpc.interviewAttempts.getMany.queryOptions({ ...filters }));
   prefetch(trpc.resume.get.queryOptions());
+  prefetch(trpc.interview.getMany.queryOptions({}));
 
   return (
     <HydrateClient>

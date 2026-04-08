@@ -1,5 +1,6 @@
 "use client";
 
+import { CommandSelect } from "../../../../components/command-select";
 import { attemptInsertScehma } from "../../schemas";
 import { GetOneInterviewAttempt } from "../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +26,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-import { SelectInterviewCommand } from "./select-interview-command";
 import { useTRPC } from "@/trpc/client";
 
 interface CreateAttemptFormProps {
@@ -170,7 +170,7 @@ export const CreateAttemptForm = ({
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Select Interview</FieldLabel>
 
-                <SelectInterviewCommand
+                <CommandSelect
                   placeholder="Select an interview"
                   value={field.value}
                   onSelect={field.onChange}

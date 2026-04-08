@@ -83,6 +83,12 @@ export async function POST(req: NextRequest) {
           return [{ role, message, secondsFromStart }];
         });
 
+        // Mark as PROCESSING while we handle the recording upload and save
+        await prisma.interviewAttempt.update({
+          where: { id: attemptId },
+          data: { status: "PROCESSING" },
+        });
+
         let recordingS3Key: string | undefined;
 
         if (recordingUrl) {

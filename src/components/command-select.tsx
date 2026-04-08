@@ -28,7 +28,7 @@ interface Props {
   className?: string;
 }
 
-export const SelectInterviewCommand = ({
+export const CommandSelect = ({
   options,
   onSelect,
   onSearch,

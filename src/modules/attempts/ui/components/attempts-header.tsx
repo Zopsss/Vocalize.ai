@@ -8,17 +8,22 @@ import { Button } from "@/components/ui/button";
 
 import { AttemptsSearchbar } from "./attempts-searchbar";
 import { CreateAttemptDialog } from "./create-attempts-dialog";
+import { InterviewCommandSelect } from "./interview-command-select";
+import StatusCommandSelect from "./status-command-select";
 
 export const AttemptsHeader = () => {
   const [filters, setFilters] = useAttemptsFilters();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const isFiltered = !!filters.search;
+  const isFiltered =
+    !!filters.search || !!filters.interviewId || !!filters.status;
 
   const onClearFilter = () => {
     setFilters({
-      search: "",
-      page: filters.page,
+      search: null,
+      interviewId: null,
+      status: null,
+      page: 1,
     });
   };
 
@@ -35,6 +40,8 @@ export const AttemptsHeader = () => {
         </div>
         <div className="flex items-center gap-x-2">
           <AttemptsSearchbar />
+          <InterviewCommandSelect />
+          <StatusCommandSelect />
           {isFiltered && (
             <Button variant={"outline"} onClick={onClearFilter}>
               <XCircleIcon />
