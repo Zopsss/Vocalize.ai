@@ -115,7 +115,7 @@ model InterviewAttempt {
   interviewId String
   interview   Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
 
-  status InterviewStatus @default(PENDING)
+  status InterviewStatus @default(UPCOMING)
 
   vapiCallId      String?
   recordingS3Url  String?
@@ -156,7 +156,7 @@ model Resume {
 }
 
 enum InterviewStatus {
-  PENDING
+  UPCOMING
   IN_PROGRESS
   PROCESSING
   COMPLETED

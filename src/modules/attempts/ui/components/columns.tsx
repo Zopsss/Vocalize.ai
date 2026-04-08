@@ -2,10 +2,44 @@
 
 import { GetOneInterviewAttempt } from "../../types";
 import { ColumnDef } from "@tanstack/react-table";
-import { CornerDownRightIcon } from "lucide-react";
+import {
+  CalendarClockIcon,
+  CheckCircle2Icon,
+  CornerDownRightIcon,
+  LoaderCircleIcon,
+  MicIcon,
+  XCircleIcon,
+} from "lucide-react";
+import React from "react";
 
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { Badge } from "@/components/ui/badge";
+
+const statusStyles: Record<string, string> = {
+  UPCOMING: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100",
+  IN_PROGRESS:
+    "bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-100",
+  PROCESSING:
+    "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-100",
+  COMPLETED: "bg-green-100 text-green-700 border-green-200 hover:bg-green-100",
+  FAILED: "bg-red-100 text-red-700 border-red-200 hover:bg-red-100",
+};
+
+const statusLabels: Record<string, string> = {
+  UPCOMING: "Upcoming",
+  IN_PROGRESS: "In Progress",
+  PROCESSING: "Processing",
+  COMPLETED: "Completed",
+  FAILED: "Failed",
+};
+
+const statusIcons: Record<string, React.ReactNode> = {
+  UPCOMING: <CalendarClockIcon className="size-3" />,
+  IN_PROGRESS: <MicIcon className="size-3" />,
+  PROCESSING: <LoaderCircleIcon className="size-3 animate-spin" />,
+  COMPLETED: <CheckCircle2Icon className="size-3" />,
+  FAILED: <XCircleIcon className="size-3" />,
+};
 
 export const columns: ColumnDef<GetOneInterviewAttempt>[] = [
   {
@@ -32,14 +66,18 @@ export const columns: ColumnDef<GetOneInterviewAttempt>[] = [
   },
   {
     accessorKey: "status",
-    header: "status",
-    cell: ({ row }) => (
-      <Badge
-        variant={"outline"}
-        className="flex items-center gap-x-2 [&>svg:size-4] rounded-md cursor-pointer hover:bg-muted"
-      >
-        {row.original.status}{" "}
-      </Badge>
-    ),
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <Badge
+          variant="outline"
+          className={`rounded-md font-semibold flex items-center gap-x-1.5 ${statusStyles[status] ?? ""}`}
+        >
+          {statusIcons[status]}
+          {statusLabels[status] ?? status}
+        </Badge>
+      );
+    },
   },
 ];
