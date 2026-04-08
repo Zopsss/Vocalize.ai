@@ -15,12 +15,7 @@ export const InterviewHeader = () => {
 
   const isFiltered = !!filters.search;
 
-  const onClearFilter = () => {
-    setFilters({
-      search: "",
-      page: filters.page,
-    });
-  };
+  const onClearFilter = () => setFilters({ search: "" });
 
   return (
     <>

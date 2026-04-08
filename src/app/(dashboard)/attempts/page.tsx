@@ -29,8 +29,8 @@ const Page = async ({ searchParams }: Props) => {
 
   return (
     <HydrateClient>
+      <AttemptsHeader />
       <Suspense fallback={<AttemptsViewLoading />}>
-        <AttemptsHeader />
         <ErrorBoundary fallback={<AttemptsViewError />}>
           <AttemptsView />
         </ErrorBoundary>

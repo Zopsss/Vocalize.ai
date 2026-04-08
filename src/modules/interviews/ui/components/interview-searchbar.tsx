@@ -15,12 +15,7 @@ export const InterviewSearchbar = () => {
       <InputGroupInput
         placeholder="Search..."
         value={filters.search}
-        onChange={(e) =>
-          setFilters({
-            page: filters.page,
-            search: e.target.value,
-          })
-        }
+        onChange={(e) => setFilters({ search: e.target.value, page: 1 })}
       />
       <InputGroupAddon>
         <SearchIcon />
