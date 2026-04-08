@@ -30,7 +30,7 @@ const firstSection = [
   },
   {
     icon: VideoIcon,
-    label: "Previous Interviews",
+    label: "Attempts",
     href: "/attempts",
   },
 ];
