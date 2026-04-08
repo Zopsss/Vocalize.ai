@@ -29,8 +29,8 @@ const Page = async ({ searchParams }: Props) => {
   return (
     <>
       <HydrateClient>
+        <InterviewHeader />
         <Suspense fallback={<InterviewsViewLoading />}>
-          <InterviewHeader />
           <ErrorBoundary fallback={<InterviewsViewError />}>
             <InterviewView />
           </ErrorBoundary>

@@ -65,7 +65,7 @@ export const interviewRouter = createTRPCRouter({
         const where = {
           userId: ctx.auth.user.id,
           ...(search && {
-            name: {
+            companyName: {
               contains: search,
               mode: Prisma.QueryMode.insensitive,
             },

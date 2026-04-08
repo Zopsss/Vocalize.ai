@@ -102,7 +102,7 @@ export const attemptRouter = createTRPCRouter({
               },
             },
           }),
-          prisma.interview.count({ where }),
+          prisma.interviewAttempt.count({ where }),
         ]);
 
         const finalTotal = total > 0 ? total : 1;
