@@ -33,14 +33,29 @@ export async function POST(req: NextRequest) {
 
         if (!vapiCallId || !attemptId) break;
 
-        await prisma.interviewAttempt.update({
-          where: { id: attemptId },
-          data: {
-            vapiCallId,
-            status: "IN_PROGRESS",
-            startedAt: new Date(),
-          },
-        });
+        try {
+          await prisma.interviewAttempt.update({
+            where: { id: attemptId },
+            data: {
+              vapiCallId,
+              status: "IN_PROGRESS",
+              startedAt: new Date(),
+            },
+          });
+        } catch (err) {
+          console.error(
+            "[vapi/webhook] Failed to mark attempt as IN_PROGRESS:",
+            err
+          );
+          await prisma.interviewAttempt
+            .update({ where: { id: attemptId }, data: { status: "FAILED" } })
+            .catch((e) =>
+              console.error(
+                "[vapi/webhook] Failed to mark attempt as FAILED:",
+                e
+              )
+            );
+        }
         break;
       }
 
@@ -83,16 +98,16 @@ export async function POST(req: NextRequest) {
           return [{ role, message, secondsFromStart }];
         });
 
-        // Mark as PROCESSING while we handle the recording upload and save
-        await prisma.interviewAttempt.update({
-          where: { id: attemptId },
-          data: { status: "PROCESSING" },
-        });
+        try {
+          // Mark as PROCESSING while we handle the recording upload and save
+          await prisma.interviewAttempt.update({
+            where: { id: attemptId },
+            data: { status: "PROCESSING" },
+          });
 
-        let recordingS3Key: string | undefined;
+          let recordingS3Key: string | undefined;
 
-        if (recordingUrl) {
-          try {
+          if (recordingUrl) {
             const response = await fetch(recordingUrl);
             if (response.ok) {
               const contentType =
@@ -107,26 +122,45 @@ export async function POST(req: NextRequest) {
               await uploadToS3(key, buffer, contentType);
               recordingS3Key = key;
             }
-          } catch (err) {
-            console.error(
-              "[vapi/webhook] Failed to upload recording to S3:",
-              err
-            );
           }
-        }
 
-        await prisma.interviewAttempt.update({
-          where: { id: attemptId },
-          data: {
-            vapiCallId,
-            status: "COMPLETED",
-            transcript: transcript.length > 0 ? transcript : undefined,
-            recordingS3Url: recordingS3Key,
-            feedbackSummary: summary ?? undefined,
-            startedAt: startedAt ? new Date(startedAt) : undefined,
-            completedAt: endedAt ? new Date(endedAt) : undefined,
-          },
-        });
+          console.log("startedAt: ", startedAt);
+          const interviewDuration =
+            startedAt && endedAt
+              ? Math.round(
+                  (new Date(endedAt).getTime() -
+                    new Date(startedAt).getTime()) /
+                    1000
+                )
+              : undefined;
+
+          await prisma.interviewAttempt.update({
+            where: { id: attemptId },
+            data: {
+              vapiCallId,
+              status: "COMPLETED",
+              transcript: transcript.length > 0 ? transcript : undefined,
+              recordingS3Url: recordingS3Key,
+              feedbackSummary: summary ?? undefined,
+              startedAt: startedAt ? new Date(startedAt) : undefined,
+              completedAt: endedAt ? new Date(endedAt) : undefined,
+              interviewDuration,
+            },
+          });
+        } catch (err) {
+          console.error(
+            "[vapi/webhook] Failed to process end-of-call-report:",
+            err
+          );
+          await prisma.interviewAttempt
+            .update({ where: { id: attemptId }, data: { status: "FAILED" } })
+            .catch((e) =>
+              console.error(
+                "[vapi/webhook] Failed to mark attempt as FAILED:",
+                e
+              )
+            );
+        }
         break;
       }
 

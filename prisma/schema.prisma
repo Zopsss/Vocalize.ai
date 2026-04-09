@@ -124,6 +124,8 @@ model InterviewAttempt {
   /// [TranscriptType]
   transcript Json? @db.JsonB
 
+  interviewDuration Int?
+
   startedAt   DateTime?
   completedAt DateTime?
 

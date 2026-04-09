@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import {
   CalendarClockIcon,
   CheckCircle2Icon,
+  ClockIcon,
   CornerDownRightIcon,
   LoaderCircleIcon,
   MicIcon,
@@ -39,6 +40,14 @@ const statusIcons: Record<string, React.ReactNode> = {
   PROCESSING: <LoaderCircleIcon className="size-3 animate-spin" />,
   COMPLETED: <CheckCircle2Icon className="size-3" />,
   FAILED: <XCircleIcon className="size-3" />,
+};
+
+const formatDuration = (totalSecs: number): string => {
+  const secs = Math.round(totalSecs);
+  if (secs < 60) return `${secs}s`;
+  const mins = Math.floor(secs / 60);
+  const rem = secs % 60;
+  return rem > 0 ? `${mins}m ${rem}s` : `${mins}m`;
 };
 
 export const columns: ColumnDef<GetOneInterviewAttempt>[] = [
@@ -76,6 +85,24 @@ export const columns: ColumnDef<GetOneInterviewAttempt>[] = [
         >
           {statusIcons[status]}
           {statusLabels[status] ?? status}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "interviewDuration",
+    header: "Duration",
+    cell: ({ row }) => {
+      const duration = row.original.interviewDuration;
+      return (
+        <Badge
+          variant="outline"
+          className="rounded-md font-semibold flex items-center gap-x-1.5 w-fit"
+        >
+          <ClockIcon className="size-3" />
+          {duration !== null && duration !== undefined
+            ? formatDuration(duration)
+            : "No Duration"}
         </Badge>
       );
     },
