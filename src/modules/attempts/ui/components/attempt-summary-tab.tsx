@@ -2,7 +2,6 @@
 
 import { ArrowRight, Clock, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
 import { GeneratedAvatar } from "@/components/generated-avatar";
 
@@ -12,7 +11,7 @@ interface Props {
   jobDescription: string;
   interviewId: string;
   completedAt: Date | null;
-  recordingUrl: string | null;
+  interviewDuration: number | null;
   feedbackSummary: string | null;
   isCompleted: boolean;
 }
@@ -43,36 +42,12 @@ export const AttemptSummaryTab = ({
   jobDescription,
   interviewId,
   completedAt,
-  recordingUrl,
+  interviewDuration,
   feedbackSummary,
   isCompleted,
 }: Props) => {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [duration, setDuration] = useState<number | null>(null);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const onMetadata = () => setDuration(audio.duration);
-    audio.addEventListener("loadedmetadata", onMetadata);
-    if (!isNaN(audio.duration)) setDuration(audio.duration);
-
-    return () => audio.removeEventListener("loadedmetadata", onMetadata);
-  }, [recordingUrl]);
-
   return (
     <div className="flex flex-col gap-y-6">
-      {/* Hidden audio to read duration from metadata */}
-      {recordingUrl && (
-        <audio
-          ref={audioRef}
-          src={recordingUrl}
-          preload="metadata"
-          className="hidden"
-        />
-      )}
-
       {/* Company | role | date */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
@@ -118,11 +93,11 @@ export const AttemptSummaryTab = ({
         <span>General summary</span>
       </div>
 
-      {/* Duration badge — from audio metadata */}
-      {duration !== null && (
+      {/* Duration badge */}
+      {interviewDuration !== null && interviewDuration !== undefined && (
         <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground border rounded-full px-3 py-1 w-fit">
           <Clock className="size-3.5" />
-          {formatDuration(duration)}
+          {formatDuration(interviewDuration)}
         </div>
       )}
 

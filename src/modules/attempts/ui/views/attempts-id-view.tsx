@@ -69,6 +69,7 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
     status,
     completedAt,
     startedAt,
+    interviewDuration,
     feedbackSummary,
     transcript,
     recordingS3Url,
@@ -88,7 +89,7 @@ export const AttemptsIdView = ({ attemptId }: Props) => {
           jobDescription={interview.jobDescription}
           interviewId={interview.id}
           completedAt={completedAt ? new Date(completedAt) : null}
-          recordingUrl={recordingS3Url}
+          interviewDuration={interviewDuration}
           feedbackSummary={feedbackSummary}
           isCompleted={isCompleted}
         />
